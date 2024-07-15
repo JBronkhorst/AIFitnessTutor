@@ -1,0 +1,87 @@
+﻿@using AIFitnessTutor.Data.Enum
+@using AIFitnessTutor.Helpers
+@using AIFitnessTutor.ViewModels
+@model PersonalInfoViewModel
+
+@{
+    ViewData["Title"] = "Sign up";
+}
+
+<div class="container" style="margin-top: 50px;">
+    <div class="col-md-8 offset-md-2" style="background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+        <h4 class="text-center">Tell us some basic information</h4>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="col-md-12 alert alert-danger">
+                <span><b>Sorry!</b> - @TempData["Error"] </span>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <form asp-action="RegisterPersonalInfo" onsubmit="toggleLoadingScreen(true)">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="tab-content mt-5" id="registerTabContent">
+                        <div class="tab-pane fade show active" id="personal-info" role="tabpanel" aria-labelledby="personal-info-tab">
+                            <div class="form-group">
+                                <label asp-for="FirstName" class="font-weight-bold control-label">First name</label>
+                                <input asp-for="FirstName" class="form-control" />
+                                <span asp-validation-for="FirstName" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Surname" class="font-weight-bold control-label">Surname</label>
+                                <input asp-for="Surname" class="form-control" />
+                                <span asp-validation-for="Surname" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="DateOfBirth" class="font-weight-bold control-label">Date of birth</label>
+                                <input type="date" asp-for="DateOfBirth" class="form-control" />
+                                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold control-label">Gender</label><br />
+                                @foreach (var gender in Enum.GetValues(typeof(Gender)))
+                                {
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio" asp-for="Gender" value="@gender" id="@($"gender-{gender}")">
+                                        <label class="form-check-label" for="@($"gender-{gender}")">@EnumHelper.GetDisplayName((Gender)gender)</label>
+                                    </div>
+                                }
+                                <span asp-validation-for="Gender" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Height" class="font-weight-bold control-label">Current height (in cm)</label>
+                                <input asp-for="Height" class="form-control" required />
+                                <span asp-validation-for="Height" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label asp-for="Weight" class="font-weight-bold control-label">Current weight (in kg)</label>
+                                <input asp-for="Weight" class="form-control" required />
+                                <span asp-validation-for="Weight" class="text-danger"></span>
+                            </div>
+                            <a class="btn btn-secondary float-left" asp-controller="EmailAndPassword" asp-action="RegisterEmailAndPassword">Previous</a>
+                            <button class="btn btn-primary float-right" type="submit">Next</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <ul class="nav nav-pills d-flex justify-content-around mt-5">
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">1</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link active" role="tab" aria-selected="true">2</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">3</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">4</a>
+            </li>
+        </ul>
+        <br />
+        <a class="d-flex justify-content-center mt-1 link-underline-dark float-center" asp-controller="Account" asp-action="Login">Cancel</a>
+    </div>
+</div>

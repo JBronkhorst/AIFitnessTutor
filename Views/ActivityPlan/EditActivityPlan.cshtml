@@ -1,0 +1,79 @@
+﻿@using AIFitnessTutor.Data.Enum
+@using AIFitnessTutor.Helpers
+@using AIFitnessTutor.ViewModels
+@model ActivityPlanViewModel
+
+@{
+    ViewData["Title"] = "Edit Activity Plan";
+}
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-6 offset-md-3" style="background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger">
+                <span><b>Sorry!</b> - @TempData["Error"] </span>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <form asp-action="EditActivityPlan" onsubmit="toggleLoadingScreen(true)">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="tab-pane" id="activity-plan" role="tabpanel" aria-labelledby="activity-plan-tab">
+                        <h4 style="margin-bottom: 20px;">Edit your activity plan</h4>
+                        <div class="form-group">
+                            <label asp-for="ActivityGoalCategory" class="font-weight-bold control-label">What is your fitness goal?</label>
+                            <select asp-for="ActivityGoalCategory" class="form-select" style="border-radius: 5px;" required>
+                                <option>--Select--</option>
+                                @foreach (var activityGoalCategory in Enum.GetValues(typeof(ActivityGoalCategory)))
+                                {
+                                    <option value="@activityGoalCategory">@EnumHelper.GetDisplayName((ActivityGoalCategory)activityGoalCategory)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ActivityGoalCategory" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold control-label">Which day(s) in the week would you like to exercise?</label>
+                            <div class="row">
+                                @foreach (ActivityDays day in Enum.GetValues(typeof(ActivityDays)))
+                                {
+                                    var isChecked = Model.ActivityDays.Contains(day);
+                                    <div class="col-6 col-md-6">
+                                        <div class="form-check">
+                                            <input name="ActivityDays" class="form-check-input" type="checkbox" value="@day" id="@($"day-{day}")" onclick="toggleNoneCheckbox(this)"
+                                            @if (isChecked)
+                                            {
+                                                <text>checked</text>
+                                            } >
+                                            <label class="form-check-label" for="@($"day-{day}")">@EnumHelper.GetDisplayName((ActivityDays)day)</label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <span asp-validation-for="ActivityDays" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ActivityTimeCategory" class="font-weight-bold control-label">How long would you like to take for each workout?</label>
+                            <select asp-for="ActivityTimeCategory" class="form-select" style="border-radius: 5px;" required id="activity-time">
+                                <option>--Select--</option>
+                                @foreach (var activityTimeCategory in Enum.GetValues(typeof(ActivityTimeCategory)))
+                                {
+                                    <option value="@activityTimeCategory" id="@($"activityTimeCategory-{activityTimeCategory}")">@EnumHelper.GetDisplayName((ActivityTimeCategory)activityTimeCategory)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ActivityTimeCategory" class="text-danger"></span>
+                        </div>
+                        <button class="btn btn-primary w-100" type="submit" style="margin-top: 30px; border-radius: 5px;">Save changes and regenerate fitness plan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <a class="d-flex justify-content-center mt-3 link-underline-dark float-center" asp-controller="Dashboard" asp-action="EditFitnessPlan" style="text-decoration: none; color: #007bff; font-weight: bold;">Cancel</a>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Include custom JS -->
+    <script src="~/js/views/register-activity-plan.js"></script>
+}

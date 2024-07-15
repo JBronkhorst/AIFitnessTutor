@@ -1,0 +1,114 @@
+﻿@using AIFitnessTutor.ViewModels
+@model FitnessPlanViewModel
+
+@{
+    ViewData["Title"] = "Your fitness plan";
+    var currentDay = DateTime.Today.DayOfWeek.ToString();
+    var daysOfWeek = Enum.GetNames(typeof(DayOfWeek));
+}
+
+<!-- Container for the whole page -->
+<div class="container mt-5" style="max-width: 1200px;">
+
+    <!-- Back button -->
+    <div class="row mb-4">
+        <div class="col-md-2">
+            <a class="btn btn-secondary" asp-controller="Dashboard" asp-action="Index" style="margin-top: 10px;">
+                &larr; Back
+            </a>
+        </div>
+        <div class="col-md-10">
+            <h1 class="mb-4 text-center" style="font-weight: bold; color: #007bff;">Your AIFitnessTutor Fitness Plan</h1>
+        </div>
+    </div>
+
+    <!-- Navigation bar for days -->
+    <div class="row mb-4">
+        <nav id="day-nav" class="navbar navbar-light bg-light justify-content-center w-100" style="box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+            <ul class="nav nav-pills">
+                @foreach (var day in daysOfWeek)
+                {
+                    <li class="nav-item">
+                        <a class="nav-link @(day.Trim() == currentDay.Trim() ? "active" : "")" href="#" data-day="@day">@day</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main content area -->
+    <div class="row">
+        <!-- Meal section -->
+        <div class="mt-4 col-md-6 day-section">
+            <h3 style="font-weight: bold; color: #007bff;">Your Meal Plan</h3>
+            <div class="section-content" style="padding: 20px; background-color: #f8f9fa; border-radius: 5px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                @foreach (var day in daysOfWeek)
+                {
+                    <div class="day-content meal-content" data-day="@day" style="@(day.Trim() == currentDay.Trim() ? "display: block;" : "display: none;")">
+                        <ul class="list-group">
+                            @if (Model.Meals.ContainsKey(day) && Model.Meals[day].Any())
+                            {
+                                @foreach (var recipe in Model.Meals[day])
+                                {
+                                    <li class="list-group-item">
+                                        <strong>@recipe.Type</strong>
+                                        <button class="btn btn-info btn-sm float-right" onclick="showRecipe('@recipe.Id')">Show Recipe</button>
+                                        <br />
+                                        <span>@recipe.Name</span>
+                                        <div id="recipe-@recipe.Id" class="mt-2" style="display:none;">
+                                            <div style="white-space: pre-line">@Html.Raw(recipe.StepByStepInstructions)</div>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="list-group-item">
+                                    <p>No meals for this day.</p>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+
+        <!-- Workout section -->
+        <div class="mt-4 col-md-6 day-section">
+            <h3 style="font-weight: bold; color: #007bff;">Your Workout Plan</h3>
+            <div class="section-content" style="padding: 20px; background-color: #f8f9fa; border-radius: 5px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                @foreach (var day in daysOfWeek)
+                {
+                    <div class="day-content exercise-content" data-day="@day" style="@(day.Trim() == currentDay.Trim() ? "display: block;" : "display: none;")">
+                        <ul class="list-group">
+                            @if (Model.Exercises.ContainsKey(day) && Model.Exercises[day].Any())
+                            {
+                                @foreach (var exercise in Model.Exercises[day])
+                                {
+                                    <li class="list-group-item">
+                                        <strong>@exercise.Name</strong>
+                                        <div id="guide-@exercise.Id" class="mt-2">
+                                            <div style="white-space: pre-line">@Html.Raw(exercise.StepByStepGuide)</div>
+                                        </div>
+                                    </li>
+                                }
+                            }
+                            else
+                            {
+                                <li class="list-group-item">
+                                    <p>No exercises planned on @day.</p>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Include custom JS -->
+    <script src="~/js/views/fitness-plan.js"></script>
+    <script src="~/js/views/dashboard.js"></script>
+}

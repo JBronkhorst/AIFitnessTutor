@@ -1,0 +1,57 @@
+﻿@using AIFitnessTutor.Data.Enum
+@using AIFitnessTutor.Helpers
+@using AIFitnessTutor.ViewModels
+@model NutritionPlanViewModel
+@{
+    ViewData["Title"] = "Edit Nutrition Plan";
+}
+
+<div class="row" style="margin-top: 50px;">
+    <div class="col-md-6 offset-md-3" style="background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+        <form asp-action="EditNutritionPlan" method="post" onsubmit="toggleLoadingScreen(true)">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <h4 class="text-center" style="margin-bottom: 20px;">Edit your nutrition plan</h4>
+            <div class="mt-2">
+                <div class="form-group">
+                    <label class="font-weight-bold control-label">Nutrition Restrictions</label>
+                    <div class="row">
+                        @foreach (var restriction in Enum.GetValues(typeof(NutritionRestriction)).Cast<NutritionRestriction>())
+                        {
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input name="NutritionRestriction" class="form-check-input" type="checkbox" value="@restriction" id="@($"restriction-{(int)restriction}")" @(Model.NutritionRestriction.Contains(restriction) ? "checked" : "")>
+                                    <label class="form-check-label" for="@($"restriction-{(int)restriction}")">@EnumHelper.GetDisplayName(restriction)</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <span asp-validation-for="NutritionRestriction" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="mt-2">
+                <div class="form-group">
+                    <label class="font-weight-bold control-label">Nutrition Allergies</label>
+                    <div class="row">
+                        @foreach (var allergy in Enum.GetValues(typeof(NutritionAllergy)).Cast<NutritionAllergy>())
+                        {
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input name="NutritionAllergy" class="form-check-input" type="checkbox" value="@allergy" id="@($"allergy-{(int)allergy}")" @(Model.NutritionAllergy.Contains(allergy) ? "checked" : "")>
+                                    <label class="form-check-label" for="@($"allergy-{(int)allergy}")">@EnumHelper.GetDisplayName(allergy)</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <span asp-validation-for="NutritionAllergy" class="text-danger"></span>
+                </div>
+            </div>
+            <button class="btn btn-primary w-100" type="submit" style="margin-top: 20px; border-radius: 5px;">Save changes and regenerate meal plan</button>
+        </form>
+        <a class="d-flex justify-content-center mt-3 link-underline-dark float-center" asp-controller="Dashboard" asp-action="Index" style="text-decoration: none; color: #007bff; font-weight: bold;">Cancel</a>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Include custom JS -->
+    <script src="~/js/views/register-nutrition-plan.js"></script>
+}

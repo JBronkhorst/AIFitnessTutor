@@ -1,0 +1,140 @@
+﻿@using AIFitnessTutor.ViewModels
+@model BMIViewModel
+
+@{
+    ViewData["Title"] = "Your BMI";
+}
+
+<div class="container" style="max-width: 1200px; margin-top: 20px;">
+    <!-- Row for the heading and back button -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <a class="btn btn-secondary" asp-controller="Dashboard" asp-action="Index" style="margin-top: 10px;">
+                &larr; Back
+            </a>
+        </div>
+        <div class="col-md-6 text-center">
+            <h1 style="font-weight: bold; color: #007bff;">Your BMI Meter</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Adding BMI items section -->
+        <div class="col-md-12 mt-4 day-section">
+            <div class="section-content" style="padding: 20px; background-color: #f8f9fa; border-radius: 5px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <form asp-action="AddBMI" class="row">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="col-sm-3">
+                        <label asp-for="MeasureDate" class="form-label">Date</label>
+                        <input asp-for="MeasureDate" type="date" class="col-md-10 form-control mb-2" required />
+                        <span asp-validation-for="MeasureDate" class="text-danger"></span>
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="Height" class="form-label">Height (in cm)</label>
+                        <input type="number" class="form-control mb-2" id="Height" name="Height" value="@Model.Height" readonly />
+                    </div>
+                    <div class="col-sm-2">
+                        <label for="Weight" class="form-label">Weight (in kg)</label>
+                        <input type="number" class="form-control mb-2" id="Weight" name="Weight" value="@Model.Weight" readonly />
+                    </div>
+                    <div class="col-sm-4">
+                        <label asp-for="WaistCircumference" class="form-label">Waist circumference (in cm)</label>
+                        <input asp-for="WaistCircumference" class="col-sm-6 form-control mb-2" required />
+                        <span asp-validation-for="WaistCircumference" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="mt-2 col-sm-1 btn btn-primary" style="height: 46px; margin-left: -50px;">+</button>
+                </form>
+                <div class="mt-4 mb-4">
+                    @if (Model.BMIItems != null && Model.BMIItems.Count > 0)
+                    {
+                        var latestBmiItem = Model.BMIItems.First();
+                        var bmiScore = latestBmiItem.BMIScore;
+
+                        <span>Your current BMI is <b>@bmiScore</b></span>
+
+                        @if (bmiScore < 18.5)
+                        {
+                            <p class="text-warning">Your BMI is too low. Consider gaining weight for better health.</p>
+                        }
+                        else if (bmiScore >= 18.5 && bmiScore < 25)
+                        {
+                            <p class="text-success">Congratulations! Your BMI is in the healthy range. Keep up the good work!</p>
+                        }
+                        else if (bmiScore >= 25 && bmiScore < 30)
+                        {
+                            <p class="text-warning">Your BMI is too high. Consider losing weight for better health.</p>
+                        }
+                        else
+                        {
+                            <p class="text-danger">Your BMI is in a dangerously unhealthy range. It's important to start losing weight for your health.</p>
+                        }
+                    }
+                    else
+                    {
+                        <p>No BMI item added yet.</p>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Graph section -->
+        <div class="col-md-8 offset-md-2 mt-4 day-section text-center">
+            <h3 style="font-weight: bold; color: #007bff;">Your Progress</h3>
+            <div class="section-content" style="padding: 20px; background-color: #f8f9fa; border-radius: 5px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <canvas id="bmiChart"></canvas>
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script src="~/js/views/bmiChart.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        var ctx = document.getElementById('bmiChart').getContext('2d');
+                        renderBmiChart(ctx,
+                    @Html.Raw(Json.Serialize(ViewBag.BMIDates)),
+                    @Html.Raw(Json.Serialize(ViewBag.BMIScores)),
+                    @Html.Raw(Json.Serialize(ViewBag.WeightValues)),
+                    @Html.Raw(Json.Serialize(ViewBag.WaistValues))
+                                            );
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- BMI history Section -->
+        <div class="col-md-12 mt-4 day-section">
+            <h3 style="font-weight: bold; color: #007bff;">History</h3>
+            <div class="section-content" style="padding: 20px; background-color: #f8f9fa; border-radius: 5px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Height</th>
+                            <th>Weight</th>
+                            <th>Waist</th>
+                            <th>BMI</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.BMIItems)
+                        {
+                            <tr>
+                                <td>@item.MeasureDate.ToShortDateString()</td>
+                                <td>@item.Height</td>
+                                <td>@item.Weight</td>
+                                <td>@item.WaistCircumference</td>
+                                <td>@item.BMIScore</td>
+                                <td>
+                                    <form asp-action="DeleteBMI" method="post">
+                                        <input type="hidden" name="id" value="@item.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,93 @@
+﻿@using AIFitnessTutor.Data.Enum
+@using AIFitnessTutor.Helpers
+@using AIFitnessTutor.ViewModels
+@model ActivityPlanViewModel
+
+@{
+    ViewData["Title"] = "Sign up";
+}
+
+<div class="container" style="margin-top: 50px;">
+    <div class="col-md-8 offset-md-2" style="background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+        @if (TempData["Error"] != null)
+        {
+            <div class="col-md-12 alert alert-danger">
+                <span><b>Sorry!</b> - @TempData["Error"] </span>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <form asp-action="RegisterActivityPlan" onsubmit="toggleLoadingScreen(true)">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="tab-pane" id="activity-plan" role="tabpanel" aria-labelledby="activity-plan-tab">
+                        <h4 class="text-center">Decide your fitness goal and workout plan</h4>
+                        <div class="form-group">
+                            <label asp-for="ActivityGoalCategory" class="font-weight-bold control-label">What is your fitness goal?</label>
+                            <select asp-for="ActivityGoalCategory" class="form-select" required>
+                                <option>--Select--</option>
+                                @foreach (var activityGoalCategory in Enum.GetValues(typeof(ActivityGoalCategory)))
+                                {
+                                    <option value="@activityGoalCategory">@EnumHelper.GetDisplayName((ActivityGoalCategory)activityGoalCategory)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ActivityGoalCategory" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label class="font-weight-bold control-label">Which day(s) in the week would you like to exercise?</label>
+                            <div class="row">
+                                @foreach (var day in Enum.GetValues(typeof(ActivityDays)))
+                                {
+                                    <div class="col-6 col-md-6">
+                                        <div class="form-check">
+                                            <input name="ActivityDays" class="form-check-input" type="checkbox" value="@day" id="@($"day-{day}")">
+                                            <label class="form-check-label" for="@($"day-{day}")">@EnumHelper.GetDisplayName((ActivityDays)day)</label>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                            <span asp-validation-for="ActivityDays" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group">
+                            <label asp-for="ActivityTimeCategory" class="font-weight-bold control-label">How long would you like to take for each workout?</label>
+                            <select asp-for="ActivityTimeCategory" class="form-select" required id="activity-time">
+                                <option>--Select--</option>
+                                @foreach (var activityTimeCategory in Enum.GetValues(typeof(ActivityTimeCategory)))
+                                {
+                                    <option value="@activityTimeCategory" id="@($"activityTimeCategory-{activityTimeCategory}")">@EnumHelper.GetDisplayName((ActivityTimeCategory)activityTimeCategory)</option>
+                                }
+                            </select>
+                            <span asp-validation-for="ActivityTimeCategory" class="text-danger"></span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <a class="btn btn-secondary float-left" asp-controller="PersonalInfo" asp-action="RegisterPersonalInfo">Previous</a>
+                            <button class="btn btn-primary float-right" type="submit">Next</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <ul class="nav nav-pills d-flex justify-content-around mt-5">
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">1</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">2</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link active" role="tab" aria-selected="true">3</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">4</a>
+            </li>
+        </ul>
+        <br />
+        <a class="d-flex justify-content-center mt-3 link-underline-dark float-center" asp-controller="Account" asp-action="Login" style="text-decoration: none; color: #007bff;">Cancel</a>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Include custom JS -->
+    <script src="~/js/views/register-activity-plan.js"></script>
+}

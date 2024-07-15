@@ -1,0 +1,94 @@
+﻿@using AIFitnessTutor.Data.Enum
+@using AIFitnessTutor.Helpers
+@using AIFitnessTutor.ViewModels
+@model NutritionPlanViewModel
+
+@{
+    ViewData["Title"] = "Sign up";
+}
+
+<div class="container" style="margin-top: 50px;">
+    <div class="col-md-8 offset-md-2" style="background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+        <h4 class="text-center">If necessary, give us extra nutrition information</h4>
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="col-md-12 alert alert-danger">
+                <span><b>Sorry!</b> - @TempData["Error"] </span>
+            </div>
+        }
+
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <form asp-action="RegisterNutritionPlan" onsubmit="toggleLoadingScreen(true)">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <div class="tab-content mt-5" id="registerTabContent">
+                        <div class="tab-pane fade show active" id="nutrition-plan" role="tabpanel" aria-labelledby="nutrition-plan-tab">
+                            <div class="form-group">
+                                <label class="font-weight-bold control-label">Do you have any food restrictions? (Optional)</label>
+                                <div class="row">
+                                    @foreach (var restriction in Enum.GetValues(typeof(NutritionRestriction)))
+                                    {
+                                        <div class="col-6 col-md-6">
+                                            <div class="form-check">
+                                                <input name="NutritionRestriction" class="form-check-input" type="checkbox" value="@restriction" id="@($"restriction-{restriction}")">
+                                                <label class="form-check-label" for="@($"restriction-{restriction}")">@EnumHelper.GetDisplayName((NutritionRestriction)restriction)</label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span asp-validation-for="NutritionRestriction" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <label class="font-weight-bold control-label">Do you have any food allergies? (Optional)</label>
+                                <div class="row">
+                                    @foreach (var allergy in Enum.GetValues(typeof(NutritionAllergy)))
+                                    {
+                                        <div class="col-6 col-md-6">
+                                            <div class="form-check">
+                                                <input name="NutritionAllergy" class="form-check-input" type="checkbox" value="@allergy" id="@($"allergy-{allergy}")">
+                                                <label class="form-check-label" for="@($"allergy-{allergy}")">@EnumHelper.GetDisplayName((NutritionAllergy)allergy)</label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <span asp-validation-for="NutritionAllergy" class="text-danger"></span>
+                            </div>
+                            <div class="mb-3 font-italic">
+                                <span>
+                                    It's important to note that this list is not exhaustive, and
+                                    individuals may have allergies to other foods not listed here.
+                                </span>
+                                <br /><br />
+                                <span>
+                                    Additionally, the severity of food allergies can vary widely
+                                    from person to person, so it's crucial to consult
+                                    with a healthcare professional if you suspect you have a food
+                                    allergy or experience symptoms after consuming certain foods.
+                                </span>
+                            </div>
+                            <a class="btn btn-secondary float-left" asp-controller="ActivityPlan" asp-action="RegisterActivityPlan">Previous</a>
+                            <button class="btn btn-primary float-right" type="submit">Next</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <ul class="nav nav-pills d-flex justify-content-around mt-5">
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">1</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">2</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link" role="tab" aria-selected="false">3</a>
+            </li>
+            <li class="nav-item">
+                <a class="border border-primary rounded-circle nav-link active" role="tab" aria-selected="true">4</a>
+            </li>
+        </ul>
+        <br />
+        <a class="d-flex justify-content-center mt-3 link-underline-dark float-center" asp-controller="Account" asp-action="Login" style="text-decoration: none; color: #007bff;">Cancel</a>
+    </div>
+</div>

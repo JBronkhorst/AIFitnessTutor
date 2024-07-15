@@ -1,0 +1,60 @@
+﻿@using AIFitnessTutor.Data.Enum
+@using AIFitnessTutor.Helpers
+@using AIFitnessTutor.ViewModels
+@model PersonalInfoViewModel
+
+@{
+    ViewData["Title"] = "Edit Personal Information";
+}
+
+<div class="container" style="margin-top: 50px;">
+    <div class="col-md-8 offset-md-2" style="background-color: #f9f9f9; padding: 30px; border-radius: 10px; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+        <h1 class="text-center" style="margin-bottom: 20px;">Edit Personal Information</h1>
+        <form asp-action="EditPersonalInfo" method="post" class="mt-4" onsubmit="toggleLoadingScreen(true)">
+            <div class="form-group">
+                <label asp-for="FirstName" class="font-weight-bold"></label>
+                <input asp-for="FirstName" class="form-control" required />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Surname" class="font-weight-bold"></label>
+                <input asp-for="Surname" class="form-control" required />
+                <span asp-validation-for="Surname" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="DateOfBirth" class="font-weight-bold"></label>
+                <input asp-for="DateOfBirth" class="form-control" type="date" required />
+                <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Gender" class="font-weight-bold control-label"></label><br />
+                @foreach (var gender in Enum.GetValues(typeof(Gender)))
+                {
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" asp-for="Gender" value="@gender" id="@($"gender-{gender}")">
+                        <label class="form-check-label" for="@($"gender-{gender}")">@EnumHelper.GetDisplayName((Gender)gender)</label>
+                    </div>
+                }
+                <span asp-validation-for="Gender" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Height" class="font-weight-bold"></label>
+                <input asp-for="Height" class="form-control" required />
+                <span asp-validation-for="Height" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Weight" class="font-weight-bold"></label>
+                <input asp-for="Weight" class="form-control" required />
+                <span asp-validation-for="Weight" class="text-danger"></span>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block" style="border-radius: 5px;">Save Changes</button>
+        </form>
+        <a class="d-flex justify-content-center mt-3 link-underline-dark float-center" asp-controller="Dashboard" asp-action="EditFitnessPlan" style="text-decoration: none; color: #007bff; font-weight: bold;">Cancel</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

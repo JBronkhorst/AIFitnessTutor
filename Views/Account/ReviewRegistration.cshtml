@@ -1,0 +1,71 @@
+﻿@using AIFitnessTutor.Data.Enum
+@using AIFitnessTutor.Helpers
+@using AIFitnessTutor.ViewModels
+@model ReviewRegistrationViewModel
+
+<div class="container mt-5" style="max-width: 800px;">
+    <div class="row justify-content-center">
+        <div class="col-md-12 text-center">
+            <h2 style="font-weight: bold; color: #007bff;">Review Your Registration</h2>
+        </div>
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="card mb-4" style="border: none; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header" style="background-color: #007bff;">
+                    <h3 style="color:white">Email</h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    <p>Email: <strong>@Model.EmailAndPassword.EmailAddress</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card mb-4" style="border: none; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header" style="background-color: #007bff;">
+                    <h3 style ="color:white">Personal Info</h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    <p>First name: <strong>@Model.PersonalInfo.FirstName</strong></p>
+                    <p>Surname: <strong>@Model.PersonalInfo.Surname</strong></p>
+                    <p>Date of Birth: <strong>@Model.PersonalInfo.DateOfBirth?.ToShortDateString()</strong></p>
+                    <p>Gender: <strong>@EnumHelper.GetDisplayName((Gender)@Model.PersonalInfo.Gender)</strong></p>
+                    <p>Height: <strong>@Model.PersonalInfo.Height</strong> cm</p>
+                    <p>Weight: <strong>@Model.PersonalInfo.Weight</strong> kg</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card mb-4" style="border: none; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header" style="background-color: #007bff;">
+                    <h3 style="color:white">Activity Plan</h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    <p>Goal: <strong>@EnumHelper.GetDisplayName((ActivityGoalCategory)@Model.ActivityPlan.ActivityGoalCategory)</strong></p>
+                    <p>Days: <strong>@(Model.ActivityPlan.ActivityDays != null ? string.Join(", ", Model.ActivityPlan.ActivityDays) : "None")</strong></p>
+                    <p>Time for each workout: <strong>@(Model.ActivityPlan.ActivityTimeCategory.HasValue ? @EnumHelper.GetDisplayName((ActivityTimeCategory)@Model.ActivityPlan.ActivityTimeCategory) : "N/A")</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12">
+            <div class="card mb-4" style="border: none; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header" style="background-color: #007bff;">
+                    <h3 style="color:white">Nutrition Plan</h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    <p>Restrictions: <strong>@(Model.NutritionPlan.NutritionRestriction != null ? string.Join(", ", Model.NutritionPlan.NutritionRestriction.Select(restriction => EnumHelper.GetDisplayName(restriction))) : "None")</strong></p>
+                    <p>Allergies: <strong>@(Model.NutritionPlan.NutritionAllergy != null ? string.Join(", ", Model.NutritionPlan.NutritionAllergy.Select(allergy => EnumHelper.GetDisplayName(allergy))) : "None")</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 text-center">
+            <form asp-action="CompleteRegistration" method="post" onsubmit="toggleLoadingScreen(true)">
+                <button type="submit" class="btn btn-success" style="border: none; padding: 10px 20px; font-size: 1.2rem;">Complete Registration</button>
+            </form>
+        </div>
+    </div>
+</div>

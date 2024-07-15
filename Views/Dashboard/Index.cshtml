@@ -1,0 +1,134 @@
+﻿@using AIFitnessTutor.ViewModels
+@model FitnessPlanViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class="container mt-5" style="max-width: 1200px;">
+    <div class="row justify-content-center">
+        <div class="col-md-12 text-center">
+            <h1 class="display-4" style="font-weight: bold; color: #007bff;">AIFitnessTutor Dashboard</h1>
+            <p class="lead" style="font-size: 1.5rem;">Fitness plan for @DateTime.Today.ToString("dddd, d MMMM yyyy")</p>
+        </div>
+    </div>
+    <div class="row">
+        <!-- Meal Section -->
+        <div class="col-md-6 mt-4">
+            <div class="card" style="border: none; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header text-center" style="background-color: #007bff;">
+                    <h3 style="color:white">Meal Plan for Today</h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    <ul class="list-group">
+                        @foreach (var day in Model.Meals.Keys)
+                        {
+                            if (day == DateTime.Today.DayOfWeek.ToString())
+                            {
+                                @foreach (var recipe in Model.Meals[day])
+                                {
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" style="border: none; border-bottom: 1px solid #ddd;">
+                                        <div>
+                                            <strong>@recipe.Type</strong>
+                                            <br />
+                                            <span>@recipe.Name</span>
+                                        </div>
+                                        <button class="btn btn-info btn-sm" style="background-color: #17a2b8; border: none;" onclick="showRecipe('@recipe.Id')">Show Recipe</button>
+                                    </li>
+                                    <li class="list-group-item" id="recipe-@recipe.Id" style="display:none; border: none; border-bottom: 1px solid #ddd;">
+                                        <div style="white-space: pre-line;">@Html.Raw(recipe.StepByStepInstructions)</div>
+                                    </li>
+                                }
+                            }
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Workout Section -->
+        <div class="col-md-6 mt-4">
+            <div class="card" style="border: none; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header text-center" style="background-color: #007bff;">
+                    <h3 style="color:white">Workout Plan for Today</h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    @{
+                        bool hasExerciseForToday = false; // Flag to track if any exercises are found for today
+                    }
+                    <ul class="list-group">
+                        @foreach (var day in Model.Exercises.Keys)
+                        {
+                            if (day == DateTime.Today.DayOfWeek.ToString() && Model.Exercises[day].Any())
+                            {
+                                hasExerciseForToday = true; // Set flag to true if exercises are found for today
+                                @foreach (var exercise in Model.Exercises[day])
+                                {
+                                    <li class="list-group-item" style="border: none; border-bottom: 1px solid #ddd;">
+                                        <strong>@exercise.Name</strong>
+                                        <div class="mt-2" style="white-space: pre-line;">@Html.Raw(exercise.StepByStepGuide)</div>
+                                    </li>
+                                }
+                            }
+                        }
+                        @if (!hasExerciseForToday)
+                        {
+                            <li class="list-group-item" style="border: none; border-bottom: 1px solid #ddd;">
+                                <p>No exercise for today</p>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- BMI Section -->
+        <div class="col-md-6 mt-4">
+            <div class="card text-center" style="border: none; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header" style="background-color: #007bff;">
+                    <h3 style="color:white">Your Progress</h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    <canvas id="bmiChart"></canvas>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script src="~/js/views/bmiChart.js"></script>
+                    <script>
+                        document.addEventListener("DOMContentLoaded", function () {
+                            var ctx = document.getElementById('bmiChart').getContext('2d');
+                            renderBmiChart(ctx,
+                        @Html.Raw(Json.Serialize(Model.BMIDates)),
+                        @Html.Raw(Json.Serialize(Model.BMIScores)),
+                        @Html.Raw(Json.Serialize(Model.WeightValues)),
+                        @Html.Raw(Json.Serialize(Model.WaistValues))
+                                                    );
+                        });
+                    </script>
+                    <a class="btn btn-primary w-100 mt-3" style="background-color: #007bff; border: none;" href="@Url.Action("Index", "BMI")">Your BMI-meter</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="col-md-6 mt-4">
+            <div class="card text-center" style="border: none; box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);">
+                <div class="card-header" style="background-color: #007bff;">
+                    <h3 style="color:white">Your Plan</h3>
+                </div>
+                <div class="card-body" style="padding: 20px;">
+                    <ul class="list-unstyled">
+                        <li class="mb-3">
+                            <a class="btn btn-primary w-100" style="background-color: #007bff; border: none; max-width: 400px;" href="@Url.Action("FitnessPlanOverview", "Dashboard")">View Full Plan</a>
+                        </li>
+                        <li>
+                            <a class="btn btn-primary w-100" style="background-color: #007bff; border: none; max-width: 400px;" href="@Url.Action("EditFitnessPlan", "Dashboard")">Change Plan</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/views/dashboard.js"></script>
+}
